@@ -8,7 +8,7 @@ const institutionSchema = new mongoose.Schema({
     },
     type:{
         type: String,
-        enum: ['School', 'College', 'coaching', 'Institute'],
+        enum: ['school', 'college', 'coaching', 'institute'],
     },
     email: {
         type: String,

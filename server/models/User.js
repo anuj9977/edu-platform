@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
 
         email: {
             type: String,
+            unique: true,
             required: true,
             lowercase: true,
             trim: true
@@ -58,9 +59,5 @@ const userSchema = new mongoose.Schema(
     }
 );
 
-userSchema.index(
-    { institutionId: 1, email: 1 },
-    { unique: true }
-);
 
 module.exports = mongoose.model("User", userSchema);

@@ -2,6 +2,7 @@ const express=require('express');
 const cors=require('cors');
 require('dotenv').config();
 const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes.js");
 
 const app=express();
 
@@ -11,7 +12,7 @@ connectDB();
 //middlewares
 app.use(cors());
 app.use(express.json());
-
+app.use("/api/auth", authRoutes);
 //Test route
 app.get('/',(req,res)=>{
     res.send('API is running...');
