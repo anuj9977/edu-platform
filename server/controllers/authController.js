@@ -203,9 +203,18 @@ const getMe = async (req, res) => {
     }
 };
 
+const adminTest = async (req, res) => {
+    return res.status(200).json({
+        success: true,
+        message: "Welcome Admin! You have access to this route.",
+        user: req.user
+    });
+};
+
 
 module.exports = {
     registerAdmin,
     loginUser,
-    getMe   
+    getMe ,
+    adminTest,  
 };
