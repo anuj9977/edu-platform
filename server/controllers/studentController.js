@@ -156,7 +156,130 @@ const getStudents = async (req, res) => {
     }
 };
 
+const updateStudent = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const institutionId = req.user.institutionId;
+
+        const student = await Student.findOne({
+            _id: id,
+            institutionId
+        });
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found"
+            });
+        }
+
+        const {
+            rollNumber,
+            dateOfBirth,
+            gender,
+            address,
+            classId
+        } = req.body;
+
+        // If class is being changed, verify it belongs
+        // to the same institution
+        if (classId) {
+            const studentClass = await Class.findOne({
+                _id: classId,
+                institutionId
+            });
+
+            if (!studentClass) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid class"
+                });
+            }
+
+            student.classId = classId;
+        }
+
+        if (rollNumber !== undefined) {
+            student.rollNumber = rollNumber;
+        }
+
+        if (dateOfBirth !== undefined) {
+            student.dateOfBirth = dateOfBirth;
+        }
+
+        if (gender !== undefined) {
+            student.gender = gender;
+        }
+
+        if (address !== undefined) {
+            student.address = address;
+        }
+
+        await student.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Student updated successfully",
+            student
+        });
+
+    } catch (error) {
+        console.error("Update student error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while updating student"
+        });
+    }
+};
+
+const deactivateStudent = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const institutionId = req.user.institutionId;
+
+        const student = await Student.findOne({
+            _id: id,
+            institutionId
+        });
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found"
+            });
+        }
+
+        student.status = "inactive";
+
+        await student.save();
+
+        // Also deactivate login account
+        await User.findByIdAndUpdate(
+            student.userId,
+            {
+                isActive: false
+            }
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Student deactivated successfully"
+        });
+
+    } catch (error) {
+        console.error("Deactivate student error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while deactivating student"
+        });
+    }
+};
+
 module.exports = {
     createStudent,
-    getStudents
+    getStudents,
+    updateStudent,
+    deactivateStudent
 };

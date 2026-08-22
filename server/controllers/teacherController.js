@@ -134,7 +134,111 @@ const getTeachers = async (req, res) => {
     }
 };
 
+const updateTeacher = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const institutionId = req.user.institutionId;
+
+        const teacher = await Teacher.findOne({
+            _id: id,
+            institutionId
+        });
+
+        if (!teacher) {
+            return res.status(404).json({
+                success: false,
+                message: "Teacher not found"
+            });
+        }
+
+        const {
+            qualification,
+            specialization,
+            joiningDate,
+            phone
+        } = req.body;
+
+        if (qualification !== undefined) {
+            teacher.qualification = qualification;
+        }
+
+        if (specialization !== undefined) {
+            teacher.specialization = specialization;
+        }
+
+        if (joiningDate !== undefined) {
+            teacher.joiningDate = joiningDate;
+        }
+
+        if (phone !== undefined) {
+            teacher.phone = phone;
+        }
+
+        await teacher.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Teacher updated successfully",
+            teacher
+        });
+
+    } catch (error) {
+        console.error("Update teacher error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while updating teacher"
+        });
+    }
+};
+
+const deactivateTeacher = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const institutionId = req.user.institutionId;
+
+        const teacher = await Teacher.findOne({
+            _id: id,
+            institutionId
+        });
+
+        if (!teacher) {
+            return res.status(404).json({
+                success: false,
+                message: "Teacher not found"
+            });
+        }
+
+        teacher.status = "inactive";
+
+        await teacher.save();
+
+        await User.findByIdAndUpdate(
+            teacher.userId,
+            {
+                isActive: false
+            }
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Teacher deactivated successfully"
+        });
+
+    } catch (error) {
+        console.error("Deactivate teacher error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while deactivating teacher"
+        });
+    }
+};
+
+
 module.exports = {
     createTeacher,
-    getTeachers
+    getTeachers,
+    updateTeacher,
+    deactivateTeacher
 };

@@ -2,7 +2,9 @@ const express = require("express");
 
 const {
     createTeacher,
-    getTeachers
+    getTeachers,
+    updateTeacher,
+    deactivateTeacher
 } = require("../controllers/teacherController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -22,6 +24,20 @@ router.post(
     protect,
     authorize("admin"),
     createTeacher
+);
+
+router.put(
+    "/:id",
+    protect,
+    authorize("admin"),
+    updateTeacher
+);
+
+router.delete(
+    "/:id",
+    protect,
+    authorize("admin"),
+    deactivateTeacher
 );
 
 module.exports = router;

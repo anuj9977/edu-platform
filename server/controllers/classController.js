@@ -84,7 +84,66 @@ const getClasses = async (req, res) => {
     }
 };
 
+const updateClass = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const institutionId = req.user.institutionId;
+
+        const classData = await Class.findOne({
+            _id: id,
+            institutionId
+        });
+
+        if (!classData) {
+            return res.status(404).json({
+                success: false,
+                message: "Class not found"
+            });
+        }
+
+        const {
+            name,
+            section,
+            academicYear,
+            classTeacherId
+        } = req.body;
+
+        if (name !== undefined) {
+            classData.name = name;
+        }
+
+        if (section !== undefined) {
+            classData.section = section;
+        }
+
+        if (academicYear !== undefined) {
+            classData.academicYear = academicYear;
+        }
+
+        if (classTeacherId !== undefined) {
+            classData.classTeacherId = classTeacherId;
+        }
+
+        await classData.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Class updated successfully",
+            class: classData
+        });
+
+    } catch (error) {
+        console.error("Update class error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while updating class"
+        });
+    }
+};
+
 module.exports = {
     createClass,
-    getClasses
+    getClasses,
+    updateClass
 };

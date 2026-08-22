@@ -3,6 +3,8 @@ const express = require("express");
 const {
     createStudent,
     getStudents,
+    updateStudent,
+    deactivateStudent
 } = require("../controllers/studentController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -23,6 +25,18 @@ router.post(
     authorize("admin"),
     createStudent
 );
+router.put(
+    "/:id",
+    protect,
+    authorize("admin"),
+    updateStudent
+);
 
+router.delete(
+    "/:id",
+    protect,
+    authorize("admin"),
+    deactivateStudent
+);
 
 module.exports = router;

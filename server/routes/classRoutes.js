@@ -2,7 +2,8 @@ const express = require("express");
 
 const {
     createClass,
-    getClasses
+    getClasses,
+    updateClass,
     
 } = require("../controllers/classController");
 
@@ -24,5 +25,14 @@ router.get(
     authorize("admin", "teacher"),
     getClasses
 );
+
+router.put(
+    "/:id",
+    protect,
+    authorize("admin"),
+    updateClass
+);
+
+
 
 module.exports = router;
