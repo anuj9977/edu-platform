@@ -105,6 +105,36 @@ const createTeacher = async (req, res) => {
     }
 };
 
+const getTeachers = async (req, res) => {
+    try {
+        const institutionId = req.user.institutionId;
+
+        const teachers = await Teacher.find({
+            institutionId,
+            status: "active"
+        })
+            .populate("userId", "name email phone")
+            .sort({
+                createdAt: -1
+            });
+
+        return res.status(200).json({
+            success: true,
+            count: teachers.length,
+            teachers
+        });
+
+    } catch (error) {
+        console.error("Get teachers error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while fetching teachers"
+        });
+    }
+};
+
 module.exports = {
-    createTeacher
+    createTeacher,
+    getTeachers
 };

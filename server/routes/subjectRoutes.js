@@ -1,28 +1,19 @@
 const express = require("express");
 
 const {
-    createClass,
-    getClasses
-    
-} = require("../controllers/classController");
+    getSubjects
+} = require("../controllers/subjectController");
 
 const { protect } = require("../middleware/authMiddleware");
 const authorize = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
-router.post(
-    "/",
-    protect,
-    authorize("admin"),
-    createClass
-);
-
 router.get(
     "/",
     protect,
     authorize("admin", "teacher"),
-    getClasses
+    getSubjects
 );
 
 module.exports = router;

@@ -54,6 +54,37 @@ const createClass = async (req, res) => {
     }
 };
 
+const getClasses = async (req, res) => {
+    try {
+        const institutionId = req.user.institutionId;
+
+        const classes = await Class.find({
+            institutionId,
+            isActive: true
+        })
+            .populate("classTeacherId", "name email")
+            .sort({
+                name: 1,
+                section: 1
+            });
+
+        return res.status(200).json({
+            success: true,
+            count: classes.length,
+            classes
+        });
+
+    } catch (error) {
+        console.error("Get classes error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while fetching classes"
+        });
+    }
+};
+
 module.exports = {
-    createClass
+    createClass,
+    getClasses
 };

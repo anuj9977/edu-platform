@@ -126,6 +126,37 @@ const createStudent = async (req, res) => {
     }
 };
 
+const getStudents = async (req, res) => {
+    try {
+        const institutionId = req.user.institutionId;
+
+        const students = await Student.find({
+            institutionId,
+            status: "active"
+        })
+            .populate("userId", "name email phone")
+            .populate("classId", "name section academicYear")
+            .sort({
+                createdAt: -1
+            });
+
+        return res.status(200).json({
+            success: true,
+            count: students.length,
+            students
+        });
+
+    } catch (error) {
+        console.error("Get students error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while fetching students"
+        });
+    }
+};
+
 module.exports = {
-    createStudent
+    createStudent,
+    getStudents
 };
