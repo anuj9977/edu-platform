@@ -6,8 +6,9 @@ const authRoutes = require("./routes/authRoutes.js");
 const classRoutes = require("./routes/classRoutes.js");
 const studentRoutes = require("./routes/studentRoutes.js");
 const teacherRoutes = require("./routes/teacherRoutes.js");
-const parentRoutes = require("./routes/parentRoutes.js");   
-
+const parentRoutes = require("./routes/parentRoutes.js"); 
+const subjectRoutes = require("./routes/subjectRoutes.js");  
+const classSubjectRoutes = require("./routes/classSubjectRoutes");
 const app=express();
 
 //connect to database
@@ -21,6 +22,11 @@ app.use("/api/classes", classRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/parents", parentRoutes);
+app.use("/api/subjects", subjectRoutes);
+app.use(
+    "/api/class-subjects",
+    classSubjectRoutes
+);
 
 //Test route
 app.get('/',(req,res)=>{
