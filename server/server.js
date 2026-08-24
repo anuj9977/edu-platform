@@ -9,6 +9,7 @@ const teacherRoutes = require("./routes/teacherRoutes.js");
 const parentRoutes = require("./routes/parentRoutes.js"); 
 const subjectRoutes = require("./routes/subjectRoutes.js");  
 const classSubjectRoutes = require("./routes/classSubjectRoutes");
+const examRoutes = require("./routes/examRoutes");
 const app=express();
 
 //connect to database
@@ -23,6 +24,7 @@ app.use("/api/students", studentRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/parents", parentRoutes);
 app.use("/api/subjects", subjectRoutes);
+app.use("/api/exams", examRoutes);
 app.use(
     "/api/class-subjects",
     classSubjectRoutes
