@@ -2,7 +2,11 @@ const express = require("express");
 
 const {
     createAttendanceSession,
-    markAttendance
+    markAttendance,
+    getSessionAttendance,
+    updateAttendance,
+    getStudentAttendanceSummary
+
 } = require("../controllers/attendanceController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -22,6 +26,27 @@ router.post(
     protect,
     authorize("admin", "teacher"),
     markAttendance
+);
+
+router.put(
+    "/records/:recordId",
+    protect,
+    authorize("admin", "teacher"),
+    updateAttendance
+);
+
+router.get(
+    "/sessions/:sessionId",
+    protect,
+    authorize("admin", "teacher"),
+    getSessionAttendance
+);
+
+router.get(
+    "/students/:studentId/summary",
+    protect,
+    authorize("admin", "teacher"),
+    getStudentAttendanceSummary
 );
 
 module.exports = router;

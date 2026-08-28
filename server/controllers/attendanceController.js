@@ -192,7 +192,247 @@ const markAttendance = async (req, res) => {
     }
 };
 
+const getSessionAttendance = async (req, res) => {
+    try {
+        const { sessionId } = req.params;
+
+        const institutionId = req.user.institutionId;
+
+        // Find session
+        const session = await AttendanceSession.findOne({
+            _id: sessionId,
+            institutionId
+        }).populate({
+            path: "classSubjectId",
+            populate: [
+                {
+                    path: "classId",
+                    select: "name section academicYear"
+                },
+                {
+                    path: "subjectId",
+                    select: "name code"
+                },
+                {
+                    path: "teacherId",
+                    populate: {
+                        path: "userId",
+                        select: "name email"
+                    }
+                }
+            ]
+        });
+
+        if (!session) {
+            return res.status(404).json({
+                success: false,
+                message: "Attendance session not found"
+            });
+        }
+
+        // Get attendance records
+        const records = await AttendanceRecord.find({
+            sessionId,
+            institutionId
+        })
+            .populate({
+                path: "studentId",
+                populate: {
+                    path: "userId",
+                    select: "name email"
+                }
+            })
+            .sort({
+                createdAt: 1
+            });
+
+        return res.status(200).json({
+            success: true,
+            session,
+            count: records.length,
+            records
+        });
+
+    } catch (error) {
+        console.error(
+            "Get session attendance error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while fetching attendance"
+        });
+    }
+};
+const updateAttendance = async (req, res) => {
+    try {
+        const { recordId } = req.params;
+
+        const {
+            status,
+            remarks
+        } = req.body;
+
+        const institutionId = req.user.institutionId;
+
+        const allowedStatuses = [
+            "present",
+            "absent",
+            "late",
+            "excused"
+        ];
+
+        if (!status || !allowedStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid attendance status"
+            });
+        }
+
+        const record = await AttendanceRecord.findOne({
+            _id: recordId,
+            institutionId
+        });
+
+        if (!record) {
+            return res.status(404).json({
+                success: false,
+                message: "Attendance record not found"
+            });
+        }
+
+        record.status = status;
+
+        if (remarks !== undefined) {
+            record.remarks = remarks;
+        }
+
+        await record.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Attendance updated successfully",
+            record
+        });
+
+    } catch (error) {
+        console.error(
+            "Update attendance error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while updating attendance"
+        });
+    }
+};
+
+const getStudentAttendanceSummary = async (req, res) => {
+    try {
+        const { studentId } = req.params;
+
+        const institutionId = req.user.institutionId;
+
+        // Verify student
+        const student = await Student.findOne({
+            _id: studentId,
+            institutionId
+        }).populate({
+            path: "userId",
+            select: "name email"
+        }).populate({
+            path: "classId",
+            select: "name section academicYear"
+        });
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found"
+            });
+        }
+
+        const records = await AttendanceRecord.find({
+            studentId,
+            institutionId
+        }).populate({
+            path: "sessionId",
+            populate: {
+                path: "classSubjectId",
+                populate: {
+                    path: "subjectId",
+                    select: "name code"
+                }
+            }
+        });
+
+        const totalClasses = records.length;
+
+        const present = records.filter(
+            record => record.status === "present"
+        ).length;
+
+        const absent = records.filter(
+            record => record.status === "absent"
+        ).length;
+
+        const late = records.filter(
+            record => record.status === "late"
+        ).length;
+
+        const excused = records.filter(
+            record => record.status === "excused"
+        ).length;
+
+        const attendancePercentage =
+            totalClasses > 0
+                ? ((present + late) / totalClasses) * 100
+                : 0;
+
+        return res.status(200).json({
+            success: true,
+
+            student: {
+                id: student._id,
+                name: student.userId.name,
+                email: student.userId.email,
+                class: student.classId
+            },
+
+            summary: {
+                totalClasses,
+                present,
+                absent,
+                late,
+                excused,
+                attendancePercentage: Number(
+                    attendancePercentage.toFixed(2)
+                )
+            },
+
+            records
+        });
+
+    } catch (error) {
+        console.error(
+            "Attendance summary error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while calculating attendance"
+        });
+    }
+};
+
+
 module.exports = {
     createAttendanceSession,
-    markAttendance
+    markAttendance,
+    getSessionAttendance,
+    updateAttendance,
+    getStudentAttendanceSummary
 };
