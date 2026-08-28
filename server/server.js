@@ -13,6 +13,7 @@ const examRoutes = require("./routes/examRoutes");
 const markRoutes = require("./routes/markRoutes");
 const resultRoutes = require("./routes/resultRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 const app=express();
 
 //connect to database
@@ -36,6 +37,11 @@ app.use(
     "/api/class-subjects",
     classSubjectRoutes
 
+);
+// Add the dashboard routes
+app.use(
+    "/api/dashboard",
+    dashboardRoutes
 );
 // Add the result routes
 app.use("/api/results", resultRoutes);
