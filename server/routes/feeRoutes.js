@@ -3,7 +3,10 @@ const express = require("express");
 const {
     createFeeStructure,
     generateStudentInvoice,
-    recordPayment
+    recordPayment,
+    getStudentFees,
+    getFeeStructures,
+    getParentFees
 } = require("../controllers/feeController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -30,6 +33,27 @@ router.post(
     protect,
     authorize("admin"),
     recordPayment
+);
+
+router.get(
+    "/student/:studentId",
+    protect,
+    authorize("admin", "teacher"),
+    getStudentFees
+);
+
+router.get(
+    "/parent",
+    protect,
+    authorize("parent"),
+    getParentFees
+);
+
+router.get(
+    "/structures",
+    protect,
+    authorize("admin"),
+    getFeeStructures
 );
 
 module.exports = router;

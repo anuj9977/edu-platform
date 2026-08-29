@@ -260,10 +260,221 @@ const recordPayment = async (req, res) => {
         });
     }
 };
+const getStudentFees = async (req, res) => {
+    try {
+        const { studentId } = req.params;
+
+        const institutionId = req.user.institutionId;
+
+        const student = await Student.findOne({
+            _id: studentId,
+            institutionId
+        })
+            .populate("userId", "name email")
+            .populate("classId", "name section academicYear");
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found"
+            });
+        }
+
+        const invoices = await FeeInvoice.find({
+            institutionId,
+            studentId
+        })
+            .populate(
+                "feeStructureId",
+                "name academicYear description"
+            )
+            .sort({
+                dueDate: 1
+            });
+
+        const totalAmount = invoices.reduce(
+            (sum, invoice) =>
+                sum + invoice.totalAmount,
+            0
+        );
+
+        const paidAmount = invoices.reduce(
+            (sum, invoice) =>
+                sum + invoice.paidAmount,
+            0
+        );
+
+        const pendingAmount =
+            totalAmount - paidAmount;
+
+        return res.status(200).json({
+            success: true,
+
+            student: {
+                id: student._id,
+                name: student.userId.name,
+                email: student.userId.email,
+                class: student.classId
+            },
+
+            summary: {
+                totalAmount,
+                paidAmount,
+                pendingAmount
+            },
+
+            invoices
+        });
+
+    } catch (error) {
+        console.error(
+            "Get student fees error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while fetching student fees"
+        });
+    }
+};
+
+const Parent = require("../models/Parent");
+
+const getParentFees = async (req, res) => {
+    try {
+        const institutionId = req.user.institutionId;
+        const userId = req.user.userId;
+
+        const parent = await Parent.findOne({
+            userId,
+            institutionId,
+            status: "active"
+        });
+
+        if (!parent) {
+            return res.status(404).json({
+                success: false,
+                message: "Parent profile not found"
+            });
+        }
+
+        const children = await Student.find({
+            institutionId,
+            parentId: userId,
+            status: "active"
+        })
+            .populate("userId", "name email")
+            .populate(
+                "classId",
+                "name section academicYear"
+            );
+
+        const childFees = [];
+
+        for (const child of children) {
+
+            const invoices = await FeeInvoice.find({
+                institutionId,
+                studentId: child._id
+            })
+                .populate(
+                    "feeStructureId",
+                    "name academicYear description"
+                )
+                .sort({
+                    dueDate: 1
+                });
+
+            const totalAmount = invoices.reduce(
+                (sum, invoice) =>
+                    sum + invoice.totalAmount,
+                0
+            );
+
+            const paidAmount = invoices.reduce(
+                (sum, invoice) =>
+                    sum + invoice.paidAmount,
+                0
+            );
+
+            childFees.push({
+                student: {
+                    id: child._id,
+                    name: child.userId.name,
+                    class: child.classId
+                },
+
+                summary: {
+                    totalAmount,
+                    paidAmount,
+                    pendingAmount:
+                        totalAmount - paidAmount
+                },
+
+                invoices
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            children: childFees
+        });
+
+    } catch (error) {
+        console.error(
+            "Get parent fees error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while fetching parent fees"
+        });
+    }
+};
 
 
+const getFeeStructures = async (req, res) => {
+    try {
+        const institutionId = req.user.institutionId;
+
+        const feeStructures = await FeeStructure.find({
+            institutionId,
+            isActive: true
+        })
+            .populate(
+                "classId",
+                "name section academicYear"
+            )
+            .sort({
+                academicYear: -1,
+                dueDate: 1
+            });
+
+        return res.status(200).json({
+            success: true,
+            count: feeStructures.length,
+            feeStructures
+        });
+
+    } catch (error) {
+        console.error(
+            "Get fee structures error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error while fetching fee structures"
+        });
+    }
+};
 module.exports = {
     createFeeStructure,
     generateStudentInvoice,
-    recordPayment
+    recordPayment,
+    getStudentFees,
+    getParentFees,
+    getFeeStructures
 };

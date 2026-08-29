@@ -15,6 +15,7 @@ const resultRoutes = require("./routes/resultRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const feeRoutes = require("./routes/feeRoutes");
+const announcementRoutes = require("./routes/announcementRoutes");
 const app=express();
 
 //connect to database
@@ -60,6 +61,11 @@ app.get('/',(req,res)=>{
 app.use(
     "/api/attendance",
     attendanceRoutes
+);
+// Add the announcement routes
+app.use(
+    "/api/announcements",
+    announcementRoutes
 );
 
 
