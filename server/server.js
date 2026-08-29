@@ -14,6 +14,7 @@ const markRoutes = require("./routes/markRoutes");
 const resultRoutes = require("./routes/resultRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const feeRoutes = require("./routes/feeRoutes");
 const app=express();
 
 //connect to database
@@ -45,6 +46,9 @@ app.use(
 );
 // Add the result routes
 app.use("/api/results", resultRoutes);
+
+// Add the fee routes
+app.use("/api/fees", feeRoutes);
 
 //Test route
 app.get('/',(req,res)=>{
