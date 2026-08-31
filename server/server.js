@@ -16,6 +16,8 @@ const attendanceRoutes = require("./routes/attendanceRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const feeRoutes = require("./routes/feeRoutes");
 const announcementRoutes = require("./routes/announcementRoutes");
+const notificationRoutes =
+    require("./routes/notificationRoutes");
 const app=express();
 
 //connect to database
@@ -66,6 +68,11 @@ app.use(
 app.use(
     "/api/announcements",
     announcementRoutes
+);
+
+app.use(
+    "/api/notifications",
+    notificationRoutes
 );
 
 

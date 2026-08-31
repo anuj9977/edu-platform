@@ -1,7 +1,11 @@
 const Announcement = require("../models/Announcement");
 const Class = require("../models/Class");
 const Student = require("../models/Student");
-
+const Parent = require("../models/Parent");
+const Teacher = require("../models/Teacher");
+const {
+    createAnnouncementNotifications
+} = require("../services/notificationService");
 const createAnnouncement = async (req, res) => {
     try {
         const {
@@ -113,6 +117,10 @@ const createAnnouncement = async (req, res) => {
                 publishedAt: new Date()
             });
 
+            const notifications =
+            await createAnnouncementNotifications(
+                announcement
+            );
         return res.status(201).json({
             success: true,
             message: "Announcement created successfully",
@@ -196,7 +204,170 @@ const getStudentAnnouncements = async (req, res) => {
         });
     }
 };
+
+
+const getParentAnnouncements = async (req, res) => {
+    try {
+        const institutionId = req.user.institutionId;
+        const userId = req.user.userId;
+
+        const parent = await Parent.findOne({
+            userId,
+            institutionId,
+            status: "active"
+        });
+
+        if (!parent) {
+            return res.status(404).json({
+                success: false,
+                message: "Parent profile not found"
+            });
+        }
+
+        const children = await Student.find({
+            institutionId,
+            parentId: userId,
+            status: "active"
+        });
+
+        const childIds = children.map(
+            child => child._id
+        );
+
+        const classIds = children
+            .filter(child => child.classId)
+            .map(child => child.classId);
+
+        const announcements =
+            await Announcement.find({
+                institutionId,
+                isPublished: true,
+
+                $or: [
+                    {
+                        targetType: "institution"
+                    },
+                    {
+                        targetType: "class",
+                        targetClassId: {
+                            $in: classIds
+                        }
+                    },
+                    {
+                        targetType: "student",
+                        targetStudentId: {
+                            $in: childIds
+                        }
+                    }
+                ]
+            })
+                .populate(
+                    "createdBy",
+                    "name role"
+                )
+                .sort({
+                    publishedAt: -1
+                });
+
+        return res.status(200).json({
+            success: true,
+            count: announcements.length,
+            announcements
+        });
+
+    } catch (error) {
+        console.error(
+            "Get parent announcements error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message:
+                "Server error while fetching announcements"
+        });
+    }
+};
+
+
+
+
+const getTeacherAnnouncements = async (req, res) => {
+    try {
+        const institutionId = req.user.institutionId;
+        const userId = req.user.userId;
+
+        const teacher = await Teacher.findOne({
+            userId,
+            institutionId,
+            status: "active"
+        });
+
+        if (!teacher) {
+            return res.status(404).json({
+                success: false,
+                message: "Teacher profile not found"
+            });
+        }
+
+        const assignments = await ClassSubject.find({
+            institutionId,
+            teacherId: teacher._id,
+            isActive: true
+        });
+
+        const classIds = assignments.map(
+            assignment => assignment.classId
+        );
+
+        const announcements =
+            await Announcement.find({
+                institutionId,
+                isPublished: true,
+
+                $or: [
+                    {
+                        targetType: "institution"
+                    },
+                    {
+                        targetType: "class",
+                        targetClassId: {
+                            $in: classIds
+                        }
+                    }
+                ]
+            })
+                .populate(
+                    "createdBy",
+                    "name role"
+                )
+                .sort({
+                    publishedAt: -1
+                });
+
+        return res.status(200).json({
+            success: true,
+            count: announcements.length,
+            announcements
+        });
+
+    } catch (error) {
+        console.error(
+            "Get teacher announcements error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message:
+                "Server error while fetching announcements"
+        });
+    }
+};
 module.exports = {
     createAnnouncement,
-    getStudentAnnouncements
+    getStudentAnnouncements,
+    getParentAnnouncements,
+    getTeacherAnnouncements 
+    
 };
