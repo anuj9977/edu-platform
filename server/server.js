@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes.js");
 const classRoutes = require("./routes/classRoutes.js");
 const studentRoutes = require("./routes/studentRoutes.js");
+const analyticsRoutes = require("./routes/analyticsRoutes");
 const teacherRoutes = require("./routes/teacherRoutes.js");
 const parentRoutes = require("./routes/parentRoutes.js"); 
 const subjectRoutes = require("./routes/subjectRoutes.js");  
@@ -47,6 +48,8 @@ app.use(
     "/api/dashboard",
     dashboardRoutes
 );
+//Add the analytics routes
+app.use("/api/dashboard", analyticsRoutes);
 // Add the result routes
 app.use("/api/results", resultRoutes);
 
