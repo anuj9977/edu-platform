@@ -1,122 +1,159 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect } from 'react';
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { SessionStoreProvider } from './context/SessionStore';
+import Layout from './components/Layout';
+import { PageLoader } from './components/ui';
 
-function App() {
-  const [count, setCount] = useState(0)
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import NotificationsPage from './pages/NotificationsPage';
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+// Admin
+import AdminDashboard from './pages/admin/AdminDashboard';
+import Students from './pages/admin/Students';
+import Teachers from './pages/admin/Teachers';
+import Parents from './pages/admin/Parents';
+import Classes from './pages/admin/Classes';
+import Subjects from './pages/admin/Subjects';
+import Assignments from './pages/admin/Assignments';
+import Exams from './pages/admin/Exams';
+import Marks from './pages/admin/Marks';
+import Results from './pages/admin/Results';
+import Attendance from './pages/admin/Attendance';
+import Fees from './pages/admin/Fees';
+import Announcements from './pages/admin/Announcements';
 
-      <div className="ticks"></div>
+// Teacher
+import TeacherDashboard from './pages/teacher/TeacherDashboard';
+import TeacherAttendance from './pages/teacher/TeacherAttendance';
+import TeacherMarks from './pages/teacher/TeacherMarks';
+import TeacherAnnouncements from './pages/teacher/TeacherAnnouncements';
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+// Student
+import StudentDashboard from './pages/student/StudentDashboard';
+import StudentAnnouncements from './pages/student/StudentAnnouncements';
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+// Parent
+import ParentDashboard from './pages/parent/ParentDashboard';
+import ParentFees from './pages/parent/ParentFees';
+import ParentAnnouncements from './pages/parent/ParentAnnouncements';
+
+function RequireAuth() {
+  const { user, loading } = useAuth();
+  if (loading) return <PageLoader />;
+  if (!user) return <Navigate to="/login" replace />;
+  return <Outlet />;
 }
 
-export default App
+function RoleGuard({ role }) {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== role) return <Navigate to={`/${user.role}`} replace />;
+  return <Outlet />;
+}
+
+function RoleHome() {
+  const { user } = useAuth();
+  return <Navigate to={user ? `/${user.role}` : '/login'} replace />;
+}
+
+function NoSidebar() {
+  useEffect(() => {
+    document.body.classList.add('no-sidebar');
+    return () => document.body.classList.remove('no-sidebar');
+  }, []);
+  return null;
+}
+
+function NotFound() {
+  const { user } = useAuth();
+  return (
+    <div className="auth-page">
+      <div className="card auth-card">
+        <div className="card-body" style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 48 }}>🔍</div>
+          <h2 style={{ marginTop: 8 }}>Page not found</h2>
+          <p className="text-muted">The page you are looking for doesn't exist.</p>
+          <button type="button" className="btn btn-primary" style={{ marginTop: 12 }} onClick={() => window.location.assign(user ? `/${user.role}` : '/login')}>
+            Go Home
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <SessionStoreProvider>
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                <>
+                  <NoSidebar />
+                  <LoginPage />
+                </>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <>
+                  <NoSidebar />
+                  <RegisterPage />
+                </>
+              }
+            />
+
+            <Route element={<RequireAuth />}>
+              <Route element={<Layout />}>
+                <Route path="/" element={<RoleHome />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
+
+                <Route path="/admin" element={<RoleGuard role="admin" />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="students" element={<Students />} />
+                  <Route path="teachers" element={<Teachers />} />
+                  <Route path="parents" element={<Parents />} />
+                  <Route path="classes" element={<Classes />} />
+                  <Route path="subjects" element={<Subjects />} />
+                  <Route path="assignments" element={<Assignments />} />
+                  <Route path="exams" element={<Exams />} />
+                  <Route path="marks" element={<Marks />} />
+                  <Route path="results" element={<Results />} />
+                  <Route path="attendance" element={<Attendance />} />
+                  <Route path="fees" element={<Fees />} />
+                  <Route path="announcements" element={<Announcements />} />
+                </Route>
+
+                <Route path="/teacher" element={<RoleGuard role="teacher" />}>
+                  <Route index element={<TeacherDashboard />} />
+                  <Route path="attendance" element={<TeacherAttendance />} />
+                  <Route path="marks" element={<TeacherMarks />} />
+                  <Route path="announcements" element={<TeacherAnnouncements />} />
+                </Route>
+
+                <Route path="/student" element={<RoleGuard role="student" />}>
+                  <Route index element={<StudentDashboard />} />
+                  <Route path="announcements" element={<StudentAnnouncements />} />
+                </Route>
+
+                <Route path="/parent" element={<RoleGuard role="parent" />}>
+                  <Route index element={<ParentDashboard />} />
+                  <Route path="fees" element={<ParentFees />} />
+                  <Route path="announcements" element={<ParentAnnouncements />} />
+                </Route>
+              </Route>
+            </Route>
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </SessionStoreProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
