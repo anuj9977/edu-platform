@@ -6,6 +6,8 @@ It talks to the Express + MongoDB backend in the `../server` folder.
 
 ## Features
 
+- **Landing page** with role-based login entry points: Admin 🛡️, Teacher 👩‍🏫, Student 🎓 and Parent 👨‍👩‍👧
+  — each card routes to `/login?role=…` and pre-selects the account type.
 - **Role-based access**: admin, teacher, student and parent dashboards with tailored menus.
 - **Auth**: institution registration (creates the admin) and login via JWT.
 - **Admin**:

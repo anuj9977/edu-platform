@@ -7,6 +7,7 @@ import { PageLoader } from './components/ui';
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import LandingPage from './pages/LandingPage';
 import NotificationsPage from './pages/NotificationsPage';
 
 // Admin
@@ -42,20 +43,26 @@ import ParentAnnouncements from './pages/parent/ParentAnnouncements';
 function RequireAuth() {
   const { user, loading } = useAuth();
   if (loading) return <PageLoader />;
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/" replace />;
   return <Outlet />;
 }
 
 function RoleGuard({ role }) {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/" replace />;
   if (user.role !== role) return <Navigate to={`/${user.role}`} replace />;
   return <Outlet />;
 }
 
-function RoleHome() {
+function HomePage() {
   const { user } = useAuth();
-  return <Navigate to={user ? `/${user.role}` : '/login'} replace />;
+  if (user) return <Navigate to={`/${user.role}`} replace />;
+  return (
+    <>
+      <NoSidebar />
+      <LandingPage />
+    </>
+  );
 }
 
 function NoSidebar() {
@@ -109,9 +116,13 @@ export default function App() {
               }
             />
 
+            <Route
+              path="/"
+              element={<HomePage />}
+            />
+
             <Route element={<RequireAuth />}>
               <Route element={<Layout />}>
-                <Route path="/" element={<RoleHome />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
 
                 <Route path="/admin" element={<RoleGuard role="admin" />}>

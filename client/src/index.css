@@ -1035,3 +1035,324 @@ button {
     display: none;
   }
 }
+
+/* ---------- Landing page ---------- */
+.landing {
+  min-height: 100vh;
+  background: #fff;
+  color: var(--text);
+}
+.landing-nav {
+  position: sticky;
+  top: 0;
+  z-index: 55;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.landing-nav-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.landing-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--text);
+}
+.landing-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--violet));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.landing-links {
+  display: flex;
+  gap: 6px;
+  margin-left: 6px;
+  color: var(--muted);
+}
+.landing-links a {
+  text-decoration: none;
+  color: var(--muted);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 13.5px;
+}
+.landing-links a:hover {
+  color: var(--primary);
+  background: var(--primary-50);
+}
+.landing-nav-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.landing-role-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary-50);
+  color: var(--primary);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.landing-hero {
+  background: linear-gradient(160deg, #eef2ff 0%, #f5f3ff 55%, #f1f5f9 100%);
+  padding: 72px 24px;
+}
+.landing-hero-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+}
+.landing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-50);
+  color: var(--primary);
+  border: 1px solid #c7d2fe;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.landing-hero h1 {
+  font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.2;
+  letter-spacing: -0.4px;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.landing-gradient {
+  background: linear-gradient(90deg, var(--primary), var(--violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.landing-sub {
+  font-size: 16.5px;
+  color: var(--muted);
+  max-width: 680px;
+  margin: 0 0 26px;
+  line-height: 1.6;
+}
+.landing-hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.landing-stats {
+  margin-top: 36px;
+  display: flex;
+  gap: 28px;
+  align-items: center;
+}
+.landing-stats div {
+  text-align: center;
+}
+.landing-stats strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+}
+.landing-stats div {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.landing-section {
+  padding: 64px 24px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.landing-section.landing-alt {
+  background: #f8fafc;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  max-width: none;
+  padding: 72px 24px;
+}
+.landing-alt .landing-section-header,
+.landing-alt .landing-features {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.landing-section-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.landing-section-header h2 {
+  font-size: 28px;
+  letter-spacing: -0.3px;
+}
+.landing-section-header p {
+  color: var(--muted);
+  font-size: 15px;
+  margin: 8px 0 0;
+}
+.landing-roles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
+}
+.landing-role-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.landing-role-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
+}
+.landing-role-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 14px;
+}
+.landing-role-card h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+.landing-role-card p {
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin: 0 0 14px;
+}
+.landing-role-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  font-size: 13px;
+  color: #475569;
+}
+.landing-role-features li {
+  padding: 4px 0;
+}
+.landing-role-card .btn {
+  align-self: flex-start;
+}
+.landing-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+.landing-feature {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.landing-feature-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--primary-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  margin-bottom: 12px;
+}
+.landing-feature h4 {
+  font-size: 15.5px;
+  margin-bottom: 6px;
+}
+.landing-feature p {
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.landing-cta {
+  text-align: center;
+  background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 52px 24px;
+}
+.landing-cta h2 {
+  font-size: 26px;
+}
+.landing-cta p {
+  color: var(--muted);
+  font-size: 15px;
+  margin: 10px 0 22px;
+}
+.landing-footer {
+  border-top: 1px solid var(--border);
+  padding: 22px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+.landing-footer a {
+  color: var(--primary);
+}
+
+/* ---------- Login role selector ---------- */
+.login-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+  justify-content: center;
+}
+.login-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.login-role:hover {
+  border-color: var(--primary);
+}
+.login-role.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.login-role-ico {
+  font-size: 14px;
+}
